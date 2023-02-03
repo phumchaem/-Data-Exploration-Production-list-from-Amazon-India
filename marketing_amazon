@@ -1,0 +1,72 @@
+select * 
+from product_list
+order by 1
+---check duplicate---
+select distinct unique_id,count(*)
+from product_list
+group by unique_id
+having count(*)>1
+---check category---
+select distinct category
+from product_list
+order by 1
+
+select distinct brand
+from product_list
+order by 1
+
+select distinct site_name
+from product_list
+order by 1
+
+---cleaning data---
+
+select split_part(price, '.' , 2)
+from (
+select price
+from product_list
+where price like '.%' ) a
+
+update product_list 
+set price = split_part(price, '.' , 2)
+where price like '.%';
+
+ALTER TABLE product_list
+ALTER COLUMN price TYPE numeric
+USING price::numeric;
+
+select upper(brand) as brand_product,count(*)
+from product_list
+group by upper(brand)
+order by 1
+
+update product_list
+set brand = upper(brand);
+
+select  product_title,brand
+from product_list
+where brand isnull
+order by 1
+--- Data exploration----
+---check product out of stock---
+select distinct product_title
+from product_list
+where stock = 'NO'
+order by 1
+---Top sell---
+select category,count(*) as total_sales,sum(price)
+from product_list
+group by category 
+order by total_sales desc
+
+select  brand,count(*) as total_sales,sum(price) as total_prices
+from product_list 
+group by brand
+order by total_sales desc
+
+select  brand,count(*) as total_sales,sum(price) as total_prices
+from product_list 
+group by brand
+order by total_prices desc 
+
+
